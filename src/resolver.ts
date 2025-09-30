@@ -15,6 +15,8 @@ import type { ResolverProvider } from './types.js';
 export async function resolveEnvVariables(provider: ResolverProvider) {
 	const varKeys = Object.keys(process.env);
 
+	const resolvedKeys = [];
+
 	for (const key of varKeys) {
 		const rawValue = process.env[key];
 
@@ -27,5 +29,9 @@ export async function resolveEnvVariables(provider: ResolverProvider) {
 		}
 
 		process.env[key] = await provider.resolve(rawValue);
+
+		resolvedKeys.push(key);
 	}
+
+	console.log(`Successfully Resolved ${resolvedKeys.length} environment variables: ${resolvedKeys}`);
 }
