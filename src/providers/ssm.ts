@@ -20,13 +20,7 @@ export class SSMProvider implements ResolverProvider {
 	shouldResolve(value: string) {
 		return value.startsWith(this.prefix);
 	}
-	async resolve(key: string): Promise<string> {
-		const value = process.env[key];
-
-		if (!value) {
-			throw new Error(`Environment variable ${key} not found  or empty in process.env`);
-		}
-
+	async resolve(value: string): Promise<string> {
 		const response = await this.ssmClient.send(
 			new GetParameterCommand({
 				Name: value.replace(this.prefix, ''),

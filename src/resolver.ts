@@ -26,6 +26,6 @@ export async function resolveEnvVariables(provider: ResolverProvider) {
 			continue;
 		}
 
-		process.env[key] = await provider.resolve(key);
+		process.env[key] = await provider.resolve(rawValue);
 	}
 }

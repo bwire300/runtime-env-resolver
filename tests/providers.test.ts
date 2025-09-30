@@ -55,19 +55,12 @@ describe('SSMProvider', () => {
 	});
 
 	it('should resolve variables correctly when parameter exists', async () => {
-		const result = await provider.resolve('DB_PASSWORD');
+		const result = await provider.resolve(process.env.DB_PASSWORD!);
 
 		expect(result).toBe(params['/my/secure/db-password']);
 	});
 
 	it('should throw error if SSM parameter does not exist in params', async () => {
-		await expect(provider.resolve('WRONG_SSM_VAR')).rejects.toThrow();
-	});
-
-	it('should throw error if passing key that doesnt exist in env', async () => {
-		await expect(provider.resolve('RANDOM_VAR')).rejects.toThrow();
-
-		// Verify SSM was not called for non-existent env var
-		expect(ssmMock.calls()).toHaveLength(0);
+		await expect(provider.resolve('/asd/asdasd')).rejects.toThrow();
 	});
 });

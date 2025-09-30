@@ -2,13 +2,13 @@ export interface ResolverProvider {
 	/**
 	 *
 	 * @param value The env variable value to check if it should resolved or not
-	 * @description Returns true if the value should be resolved
+	 * @description This function will be called with each env variable value to check if it should be resolved or not
 	 */
 	shouldResolve(value: string): boolean;
 	/**
 	 *
-	 * @param key The env variable key to resolve
+	 * @param value The env variable value to resolve it
 	 * @description Returns the resolved value
 	 */
-	resolve(key: string): Promise<string>;
+	resolve(value: string): Promise<string>;
 }

@@ -3,7 +3,7 @@ import type { ResolverProvider } from '../src/types';
 
 describe('Resolver', () => {
 	const provider: ResolverProvider = {
-		resolve: async (key: string): Promise<string> => {
+		resolve: async (value: string): Promise<string> => {
 			return await new Promise((res) => res('resolved'));
 		},
 		shouldResolve: (value: string) => {
