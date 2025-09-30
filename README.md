@@ -13,14 +13,24 @@ npm install remote-env-resolver
 
 ## Usage
 
-### Example 1: Using the SSM Provider
+### Example 1: Using a built-in Provider such as SSMProvider
 
 (Requires `@aws-sdk/client-ssm` to be installed)
 
 ```typescript
 import { resolveEnvVariables, SSMProvider } from 'remote-env-resolver';
 
+// With default config (works on AWS Service such as EC2, Lambda, etc.)
 await resolveEnvVariables(new SSMProvider());
+
+// With custom config
+await resolveEnvVariables(new SSMProvider({
+	credentials: {
+		accessKeyId: '<key>',
+		secretAccessKey: '<secert>',
+	}
+	region: '<region>',
+}));
 ```
 
 ---
