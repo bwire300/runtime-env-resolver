@@ -3,7 +3,9 @@
 ## Overview
 
 This package provides a flexible environment variable resolver with pattern matching and custom resolution strategies.  
-It supports resolving variables from AWS Systems Manager (SSM) Parameter Store and other custom providers.
+It scans your `process.env` variables, detects values that match a provider’s prefix or pattern (e.g. `ssm:`), resolves them (e.g. fetching from AWS SSM), and replaces them with the resolved values.
+
+This way, you can keep placeholders like `ssm:/my/db/password` in your environment files and let the resolver fetch the actual secrets at runtime.
 
 ## Install
 
@@ -13,26 +15,44 @@ npm install remote-env-resolver
 
 ## Usage
 
-### Example 1: Using a built-in Provider such as SSMProvider
+### Example 1: Using a built-in Provider (SSMProvider)
 
 (Requires `@aws-sdk/client-ssm` to be installed)
+
+This provider resolves any environment variable that starts with `ssm:` by fetching the corresponding parameter from **AWS Systems Manager Parameter Store**.
 
 ```typescript
 import { resolveEnvVariables, SSMProvider } from 'remote-env-resolver';
 
-// With default config (works on AWS Service such as EC2, Lambda, etc.)
+// Default usage (works automatically on AWS services such as EC2 or Lambda
+// when an IAM role with SSM permissions is attached)
 await resolveEnvVariables(new SSMProvider());
 
-// With custom config
-await resolveEnvVariables(new SSMProvider({
-	credentials: {
-		accessKeyId: '<key>',
-		secretAccessKey: '<secert>',
-	}
-	region: '<region>',
-}));
+// Custom configuration (needed if running locally or outside AWS)
+await resolveEnvVariables(
+	new SSMProvider({
+		credentials: {
+			accessKeyId: '<key>',
+			secretAccessKey: '<secret>',
+		},
+		region: '<region>',
+	})
+);
 ```
 
+#### Example workflow
+
+**Before resolution (`process.env`):**
+
+```env
+DB_PASSWORD=ssm:/myapp/db/password
+```
+
+**After resolution (`process.env`):**
+
+```env
+DB_PASSWORD=super-secure-password-from-ssm
+```
 ---
 
 ### Example 2: Using a Custom Provider
@@ -76,7 +96,7 @@ const customProvider: ResolverProvider = {
 };
 
 await resolveEnvVariables(customProvider);
-```
+````
 
 ---
 
