@@ -11,7 +11,6 @@ It supports resolving variables from AWS Systems Manager (SSM) Parameter Store a
 npm install remote-env-resolver
 ```
 
-
 ## Usage
 
 ### Example 1: Using the SSM Provider
@@ -29,15 +28,44 @@ await resolveEnvVariables(new SSMProvider());
 ### Example 2: Using a Custom Provider
 
 ```typescript
-import { resolveEnvVariables } from 'remote-env-resolver';
+import { resolveEnvVariables } from './resolver.js';
+import { ResolverProvider } from './types.js';
 
-await resolveEnvVariables({
-	shouldResolve: (value) => value.startsWith('custom:'),
-	resolve: async (key) => {
-		// Implement custom resolution logic here
-		return 'resolved-value';
+/**
+ * This demonstrates how to create your own provider for handling
+ * environment variables with a specific prefix (e.g. `custom:`).
+ *
+ * In this case, variables like:
+ *   DB_PASSWORD=custom:db-passswrd-123
+ *
+ * will be intercepted by the custom provider, transformed, and resolved
+ * into their final values.
+ */
+const customProvider: ResolverProvider = {
+	/**
+	 * Determines whether the provider should handle the given value.
+	 * Here, we only resolve values starting with `custom:`.
+	 */
+	shouldResolve(value: string) {
+		return value.startsWith('custom:');
 	},
-});
+
+	/**
+	 * Defines how to resolve the matched value.
+	 * This could be replaced with calls to external APIs,
+	 * decryption logic, or database lookups.
+	 */
+	async resolve(value: string) {
+		const valueWithoutPrefix = value.replace('custom:', '');
+
+		// Replace this with real resolution logic
+		const resolvedValue = valueWithoutPrefix;
+
+		return resolvedValue;
+	},
+};
+
+await resolveEnvVariables(customProvider);
 ```
 
 ---
