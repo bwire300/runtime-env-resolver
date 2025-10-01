@@ -12,3 +12,7 @@ export interface ResolverProvider {
 	 */
 	resolve(value: string): Promise<string>;
 }
+
+export interface ResolveEnvOptions {
+	logging?: boolean; // enable/disable logging
+}
