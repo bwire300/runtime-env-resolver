@@ -53,50 +53,42 @@ DB_PASSWORD=ssm:/myapp/db/password
 ```env
 DB_PASSWORD=super-secure-password-from-ssm
 ```
+
 ---
 
-### Example 2: Using a Custom Provider
+### Example 2: Using a Custom Provider (Your Own Provider)
 
 ```typescript
-import { resolveEnvVariables } from './resolver.js';
-import { ResolverProvider } from './types.js';
+import { resolveEnvVariables, ResolverProvider } from 'remote-env-resolver';
 
-/**
- * This demonstrates how to create your own provider for handling
- * environment variables with a specific prefix (e.g. `custom:`).
- *
- * In this case, variables like:
- *   DB_PASSWORD=custom:db-passswrd-123
- *
- * will be intercepted by the custom provider, transformed, and resolved
- * into their final values.
- */
+// A simple provider that resolves values starting with `custom:`
 const customProvider: ResolverProvider = {
-	/**
-	 * Determines whether the provider should handle the given value.
-	 * Here, we only resolve values starting with `custom:`.
-	 */
 	shouldResolve(value: string) {
 		return value.startsWith('custom:');
 	},
-
-	/**
-	 * Defines how to resolve the matched value.
-	 * This could be replaced with calls to external APIs,
-	 * decryption logic, or database lookups.
-	 */
 	async resolve(value: string) {
-		const valueWithoutPrefix = value.replace('custom:', '');
+		// Your custom logic to resolve the value
 
-		// Replace this with real resolution logic
-		const resolvedValue = valueWithoutPrefix;
-
-		return resolvedValue;
+		return value.replace('custom:', '');
 	},
 };
 
 await resolveEnvVariables(customProvider);
-````
+```
+
+#### Example workflow
+
+**Before resolution (`process.env`):**
+
+```env
+DB_PASSWORD=custom:db-password-123
+```
+
+**After resolution (`process.env`):**
+
+```env
+DB_PASSWORD=db-password-123
+```
 
 ---
 

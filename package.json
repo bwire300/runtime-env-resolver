@@ -28,6 +28,7 @@
 		"env",
 		"resolver",
 		"ssm",
+		"ssm-resolver",
 		"aws",
 		"dotenv"
 	],
