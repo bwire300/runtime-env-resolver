@@ -33,5 +33,9 @@ export async function resolveEnvVariables(provider: ResolverProvider) {
 		resolvedKeys.push(key);
 	}
 
-	console.log(`Successfully Resolved ${resolvedKeys.length} environment variables: ${resolvedKeys}`);
+	if (resolvedKeys.length > 0) {
+		console.log(`Resolved ${resolvedKeys.length} environment variable(s): ${resolvedKeys.join(', ')}`);
+	} else {
+		console.log('No environment variables needed resolution.');
+	}
 }
