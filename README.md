@@ -24,20 +24,12 @@ This provider resolves any environment variable that starts with `ssm:` by fetch
 ```typescript
 import { resolveEnvVariables, SSMProvider } from 'remote-env-resolver';
 
-// Default usage (works automatically on AWS services such as EC2 or Lambda
-// when an IAM role with SSM permissions is attached)
+/**
+ *  Default usage (works automatically on AWS services such as EC2 or Lambda
+ *  when an IAM role with SSM permissions exists)
+ * 	Pass credentials to SSMProvider constructor if outside of AWS or running locally
+ * **/
 await resolveEnvVariables(new SSMProvider());
-
-// Custom configuration (needed if running locally or outside AWS)
-await resolveEnvVariables(
-	new SSMProvider({
-		credentials: {
-			accessKeyId: '<key>',
-			secretAccessKey: '<secret>',
-		},
-		region: '<region>',
-	})
-);
 ```
 
 #### Example workflow
@@ -66,10 +58,12 @@ const customProvider: ResolverProvider = {
 	shouldResolve(value: string) {
 		return value.startsWith('custom:');
 	},
-	async resolve(value: string) {
+	async resolve(values: string[]) {
+		const strippedValues = values.map((value) => value.replace('custom:', ''));
 		// Your custom logic to resolve the value
+		// Ensure to return the resolved values in the same order as the original values array
 
-		return value.replace('custom:', '');
+		return []
 	},
 };
 

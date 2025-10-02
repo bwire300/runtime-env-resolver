@@ -2,9 +2,19 @@ import { resolveEnvVariables } from '../src/resolver';
 import type { ResolverProvider } from '../src/types';
 
 describe('Resolver', () => {
+	const store = {
+		dbPassword: 'sensitive_pass',
+		connectionString: 'sensitive_connection_string',
+		redisPassword: 'sensitive_redis_password',
+	};
+
 	const provider: ResolverProvider = {
-		resolve: async (value: string): Promise<string> => {
-			return await new Promise((res) => res('resolved'));
+		resolve: async (values: string[]) => {
+			return values.map((v) => {
+				const noPrefix = v.replace('remoteVar:', '');
+
+				return store[noPrefix as keyof typeof store];
+			});
 		},
 		shouldResolve: (value: string) => {
 			return value.startsWith('remoteVar');
@@ -12,18 +22,20 @@ describe('Resolver', () => {
 	};
 
 	process.env = {
-		DB_PASSWORD: 'db_password',
-		remoteVar: 'remoteVar-1',
-		remoteVar2: 'remoteVar-2',
-		remoteVar3: 'diff-3',
+		NON_SENSITIVE_VAR: 'non-sensitive',
+		DB_PASSWORD: 'remoteVar:dbPassword',
+		CONNECTION_STRING: 'remoteVar:connectionString',
+		NON_SENSITIVE_VAR2: 'non-sensitive2',
+		REDIS_PASSWORD: 'remoteVar:redisPassword',
 	};
 
 	it('should resolve variables', async () => {
 		await resolveEnvVariables(provider);
 
-		expect(process.env.DB_PASSWORD).toBe('db_password');
-		expect(process.env.remoteVar).toBe('resolved');
-		expect(process.env.remoteVar2).toBe('resolved');
-		expect(process.env.remoteVar3).toBe('diff-3');
+		expect(process.env.NON_SENSITIVE_VAR).toBe('non-sensitive');
+		expect(process.env.DB_PASSWORD).toBe(store.dbPassword);
+		expect(process.env.CONNECTION_STRING).toBe(store.connectionString);
+		expect(process.env.NON_SENSITIVE_VAR2).toBe('non-sensitive2');
+		expect(process.env.REDIS_PASSWORD).toBe(store.redisPassword);
 	});
 });
