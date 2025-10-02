@@ -1,6 +1,6 @@
 {
 	"name": "remote-env-resolver",
-	"version": "0.3.0",
+	"version": "1.0.0",
 	"description": "Flexible environment variable resolver with pattern matching and custom resolution strategies (SSM, etc.)",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",

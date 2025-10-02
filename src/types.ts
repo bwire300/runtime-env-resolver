@@ -7,12 +7,15 @@ export interface ResolverProvider {
 	shouldResolve(value: string): boolean;
 	/**
 	 *
-	 * @param value The env variable value to resolve it
-	 * @description Returns the resolved value
+	 * @param values The array of variable values to resolve
+	 * @returns the resolved values in the same order
 	 */
-	resolve(value: string): Promise<string>;
+	resolve(values: string[]): Promise<string[]>;
 }
 
 export interface ResolveEnvOptions {
-	logging?: boolean; // enable/disable logging
+	/**
+	 * enable/disable logging. Defaults to `true`
+	 */
+	logging?: boolean;
 }
