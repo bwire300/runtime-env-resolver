@@ -25,9 +25,10 @@ This provider resolves any environment variable that starts with `ssm:` by fetch
 import { resolveEnvVariables, SSMProvider } from 'remote-env-resolver';
 
 /**
- *  Default usage (works automatically on AWS services such as EC2 or Lambda
- *  when an IAM role with SSM permissions exists)
- * 	Pass credentials to SSMProvider constructor if outside of AWS or running locally
+ *  Default (works automatically on AWS services such as EC2 or Lambda
+ *  when an IAM role with SSM permissions exists).
+ * 
+ * 	Outside of AWS or running locally, pass credentials SSMProvider({ credentials, region })
  * **/
 await resolveEnvVariables(new SSMProvider());
 ```
@@ -89,7 +90,7 @@ DB_PASSWORD=db-password-123
 ## Contributing
 
 We welcome contributions from the community. If you find a bug or have a feature request, please open an issue.
-If you'd like to contribute code, open a pull request.
+If you'd like to contribute code, fork the repository and open a pull request.
 
 ## License
 
