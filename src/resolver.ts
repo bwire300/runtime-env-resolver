@@ -3,46 +3,57 @@ import type { ResolveEnvOptions, ResolverProvider } from './types.js';
 /**
  * Resolve environment variables using the given provider.
  *
- * The function will loop through all environment variables and
- * check if the value should be resolved using the provider.
- * If the value should be resolved, the function will call the
- * provider's resolve method and set the resolved value as the
- * environment variable.
+ * Mutates `process.env` and also returns an object of resolved values.
  *
- * @param provider The resolver provider to use for resolving
- *        environment variables.
+ * @param provider The resolver provider to use for resolving environment variables.
  * @param options Optional settings for the resolver
+ * @returns An object containing the resolved environment variables
  */
-export async function resolveEnvVariables(provider: ResolverProvider, options: ResolveEnvOptions = {}) {
+export async function resolveEnvVariables(provider: ResolverProvider, options: ResolveEnvOptions = {}): Promise<Record<string, string>> {
 	const { logging = true } = options;
 
-	const resolvable: { keys: string[]; values: string[] } = {
-		keys: [],
-		values: [],
-	};
+	// Collect keys and values that need resolution
+	const resolvableKeys: string[] = [];
+	const resolvableValues: string[] = [];
 
 	for (const key of Object.keys(process.env)) {
 		const value = process.env[key];
 
-		if (!value || !provider.shouldResolve(value)) {
+		if (!value) {
 			continue;
 		}
 
-		resolvable.keys.push(key);
-		resolvable.values.push(value);
+		if (!provider.shouldResolve(value)) {
+			continue;
+		}
+
+		resolvableKeys.push(key);
+		resolvableValues.push(value);
 	}
 
-	const resolvedVars = await provider.resolve(resolvable.values);
+	// Nothing to resolve
+	if (resolvableKeys.length === 0 && logging) {
+		console.log('No environment variables needed resolution.');
+		return {};
+	}
 
-	for (let i = 0; i < resolvable.keys.length; i++) {
-		process.env[resolvable.keys[i]] = resolvedVars[i];
+	// Resolve values
+	const resolvedValues = await provider.resolve(resolvableValues);
+
+	// Build result and mutate process.env
+	const resolvedObj: Record<string, string> = {};
+
+	for (let i = 0; i < resolvableKeys.length; i++) {
+		const key = resolvableKeys[i];
+		const resolvedValue = resolvedValues[i];
+
+		process.env[key] = resolvedValue;
+		resolvedObj[key] = resolvedValue;
 	}
 
 	if (logging) {
-		if (resolvedVars.length > 0) {
-			console.log(`Resolved ${resolvedVars.length} environment variable(s): ${resolvedVars.join(', ')}`);
-		} else {
-			console.log('No environment variables needed resolution.');
-		}
+		console.log(`Resolved ${resolvableKeys.length} environment variable(s): ${resolvableKeys.join(', ')}`);
 	}
+
+	return resolvedObj;
 }
