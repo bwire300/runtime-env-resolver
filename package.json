@@ -25,6 +25,9 @@
 	},
 	"keywords": [
 		"runtime-env-resolver",
+		"remote-env-resolver",
+		"ssm-resolver",
+		"dotenv-resolver",
 		"env",
 		"environment",
 		"variables",
