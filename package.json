@@ -1,7 +1,7 @@
 {
-	"name": "remote-env-resolver",
+	"name": "runtime-env-resolver",
 	"version": "1.0.1",
-	"description": "Flexible environment variable resolver with pattern matching and custom resolution strategies (SSM, etc.)",
+	"description": "Resolve environment variables dynamically at runtime from remote stores or custom providers.",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
 	"type": "module",
@@ -18,19 +18,25 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/Maged-Zaki/remote-env-resolver.git"
+		"url": "git+https://github.com/Maged-Zaki/runtime-env-resolver.git"
 	},
 	"bugs": {
-		"url": "https://github.com/Maged-Zaki/remote-env-resolver/issues"
+		"url": "https://github.com/Maged-Zaki/runtime-env-resolver/issues"
 	},
 	"keywords": [
-		"dotenv-resolver",
+		"runtime-env-resolver",
 		"env",
+		"environment",
+		"variables",
 		"resolver",
+		"dotenv",
+		"config",
+		"configuration",
+		"secrets",
 		"ssm",
-		"ssm-resolver",
 		"aws",
-		"dotenv"
+		"parameter-store",
+		"vault"
 	],
 	"author": "Maged Zaki",
 	"license": "MIT",

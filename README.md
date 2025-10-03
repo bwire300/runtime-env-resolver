@@ -1,19 +1,22 @@
-# remote-env-resolver
+# runtime-env-resolver
 
 ## Overview
 
-`remote-env-resolver` lets you **store environment variables as placeholders** (e.g. `ssm:/my/db/password`) and **resolve them at runtime** from different sources like AWS SSM or your own custom provider.
+`runtime-env-resolver` lets you store environment variables as placeholders
+(e.g. `ssm:/my/db/password`) and resolve them **at runtime** from different sources
+such as AWS SSM Parameter Store, HashiCorp Vault, or your own custom provider.
 
-- **Built-in support**: AWS SSM Parameter Store (`ssm:` prefix)
-- **Custom providers**: Write your own to resolve any placeholder format
-- **Use cases**: secrets management, dynamic config, local + cloud friendly
+✅ Keep secrets out of `.env` files  
+✅ Works with cloud & local environments  
+✅ Built-in support for AWS SSM (`ssm:` prefix)  
+✅ Extend with your own providers
 
 ---
 
 ## Install
 
 ```bash
-npm install remote-env-resolver
+npm install runtime-env-resolver
 ```
 
 ---
@@ -25,7 +28,7 @@ npm install remote-env-resolver
 (Requires `@aws-sdk/client-ssm`)
 
 ```ts
-import { resolveEnvVariables, SSMProvider } from 'remote-env-resolver';
+import { resolveEnvVariables, SSMProvider } from 'runtime-env-resolver';
 
 // Works on AWS (Lambda, EC2) if IAM role has SSM permissions.
 // For outside AWS: new SSMProvider({ region, credentials })
@@ -49,7 +52,7 @@ DB_PASSWORD=super-secure-password-from-ssm
 ### 2. Custom Provider
 
 ```ts
-import { resolveEnvVariables } from 'remote-env-resolver';
+import { resolveEnvVariables } from 'runtime-env-resolver';
 
 await resolveEnvVariables({
 	shouldResolve(value) {
@@ -90,5 +93,5 @@ MIT License – see [LICENSE](./LICENSE).
 
 ## Resources
 
-- **NPM:** https://www.npmjs.com/package/remote-env-resolver
-- **GitHub:** https://github.com/Maged-Zaki/remote-env-resolver
+- **NPM:** https://www.npmjs.com/package/runtime-env-resolver
+- **GitHub:** https://github.com/Maged-Zaki/runtime-env-resolver
