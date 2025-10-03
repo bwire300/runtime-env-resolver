@@ -2,10 +2,13 @@
 
 ## Overview
 
-This package provides a flexible environment variable resolver with pattern matching and custom resolution strategies.  
-It scans your `process.env` variables, detects values that match a provider’s prefix or pattern (e.g. `ssm:`), resolves them (e.g. fetching from AWS SSM), and replaces them with the resolved values.
+`remote-env-resolver` lets you **store environment variables as placeholders** (e.g. `ssm:/my/db/password`) and **resolve them at runtime** from different sources like AWS SSM or your own custom provider.
 
-This way, you can keep placeholders like `ssm:/my/db/password` in your environment files and let the resolver fetch the actual secrets at runtime.
+- **Built-in support**: AWS SSM Parameter Store (`ssm:` prefix)
+- **Custom providers**: Write your own to resolve any placeholder format
+- **Use cases**: secrets management, dynamic config, local + cloud friendly
+
+---
 
 ## Install
 
@@ -13,35 +16,29 @@ This way, you can keep placeholders like `ssm:/my/db/password` in your environme
 npm install remote-env-resolver
 ```
 
+---
+
 ## Usage
 
-### Example 1: Using a built-in Provider (SSMProvider)
+### 1. Built-in Provider (AWS SSM)
 
-(Requires `@aws-sdk/client-ssm` to be installed)
+(Requires `@aws-sdk/client-ssm`)
 
-This provider resolves any environment variable that starts with `ssm:` by fetching the corresponding parameter from **AWS Systems Manager Parameter Store**.
-
-```typescript
+```ts
 import { resolveEnvVariables, SSMProvider } from 'remote-env-resolver';
 
-/**
- *  Default (works automatically on AWS services such as EC2 or Lambda
- *  when an IAM role with SSM permissions exists).
- * 
- * 	Outside of AWS or running locally, pass credentials SSMProvider({ credentials, region })
- * **/
+// Works on AWS (Lambda, EC2) if IAM role has SSM permissions.
+// For outside AWS: new SSMProvider({ region, credentials })
 await resolveEnvVariables(new SSMProvider());
 ```
 
-#### Example workflow
-
-**Before resolution (`process.env`):**
+**Before** (`process.env`):
 
 ```env
 DB_PASSWORD=ssm:/myapp/db/password
 ```
 
-**After resolution (`process.env`):**
+**After** (`process.env`):
 
 ```env
 DB_PASSWORD=super-secure-password-from-ssm
@@ -49,37 +46,33 @@ DB_PASSWORD=super-secure-password-from-ssm
 
 ---
 
-### Example 2: Using a Custom Provider (Your Own Provider)
+### 2. Custom Provider
 
-```typescript
-import { resolveEnvVariables, ResolverProvider } from 'remote-env-resolver';
+```ts
+import { resolveEnvVariables } from 'remote-env-resolver';
 
-// A simple provider that resolves values starting with `custom:`
-const customProvider: ResolverProvider = {
-	shouldResolve(value: string) {
+await resolveEnvVariables({
+	shouldResolve(value) {
 		return value.startsWith('custom:');
 	},
-	async resolve(values: string[]) {
-		const strippedValues = values.map((value) => value.replace('custom:', ''));
-		// Your custom logic to resolve the value
-		// Ensure to return the resolved values in the same order as the original values array
+	async resolve(values) {
+		// Strip prefix
+		const noPrefix = values.map((v) => v.replace('custom:', ''));
 
-		return []
+		// apply your own logic
+		// NOTE: ensure to preserve order of values in the same order as the original array
+		return noPrefix;
 	},
-};
-
-await resolveEnvVariables(customProvider);
+});
 ```
 
-#### Example workflow
-
-**Before resolution (`process.env`):**
+**Before** (`process.env`):
 
 ```env
 DB_PASSWORD=custom:db-password-123
 ```
 
-**After resolution (`process.env`):**
+**After** (`process.env`):
 
 ```env
 DB_PASSWORD=db-password-123
@@ -89,14 +82,13 @@ DB_PASSWORD=db-password-123
 
 ## Contributing
 
-We welcome contributions from the community. If you find a bug or have a feature request, please open an issue.
-If you'd like to contribute code, fork the repository and open a pull request.
+PRs and issues are welcome! Fork the repo and open a pull request.
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for more information.
+MIT License – see [LICENSE](./LICENSE).
 
 ## Resources
 
-- NPM: [https://www.npmjs.com/package/remote-env-resolver](https://www.npmjs.com/package/remote-env-resolver)
-- GitHub: [https://github.com/Maged-Zaki/remote-env-resolver](https://github.com/Maged-Zaki/remote-env-resolver)
+- **NPM:** https://www.npmjs.com/package/remote-env-resolver
+- **GitHub:** https://github.com/Maged-Zaki/remote-env-resolver
